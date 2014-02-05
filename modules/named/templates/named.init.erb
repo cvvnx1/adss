@@ -1,0 +1,93 @@
+#!/bin/sh
+#
+# <%= scope['named::params::prog'] %>
+#           This shell script takes care of starting and stopping
+#           the <%= scope['named::params::prog'] %> subsystem.
+#
+# chkconfig: 235 73 27
+# description:	<%= scope['named::params::prog'] %> server.
+# processname: <%= scope['named::params::prog'] %>
+# config: <%= scope['named::params::conf_dir'] %>/named.conf
+# pidfile: <%= scope['named::params::pid_dir'] %>/named.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+prog=<%= scope['named::params::prog'] %>
+prefix=<%= scope['named::params::prefix_dir'] %>
+exec=${prefix}/sbin/named
+conffile=<%= scope['named::params::conf_dir'] %>/${prog}.conf
+pidfile=<%= scope['named::params::pid_dir'] %>/${prog}.pid
+
+exec_opt="-u ${prog} -c ${conffile}"
+
+[ -e /etc/sysconfig/${prog} ] && . /etc/sysconfig/${prog}
+
+start(){
+  [ -x ${exec} ] || exit 5
+
+  local RETVAL
+
+  if [ -f ${pidfile} ]; then
+    action $"Starting ${prog}: " /bin/true
+  else
+    eval ${exec} ${exec_opt} >/dev/null 2>&1
+    RETVAL=$?
+    if [ ${RETVAL} = 0 ]; then
+      action $"Starting ${prog}: " /bin/true
+    else
+      action $"Starting ${prog}: " /bin/false
+    fi
+  fi
+
+  return ${RETVAL}
+}
+
+stop(){
+  if [ -f ${pidfile} ]; then
+    PID=$(cat "${pidfile}")
+    kill -9 ${PID} >/dev/null 2>&1
+    sleep 2
+    rm -f ${pidfile}
+    action $"Stopping ${prog}: " /bin/true
+  else
+    rm -f ${lockfile}
+    action $"Stopping ${prog}: " /bin/true
+  fi
+
+  return 0
+}
+ 
+restart(){
+    stop
+    sleep 2
+    start
+}
+
+rh_status() {
+    status -p ${pidfile} ${exec}
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    rh_status
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 2
+esac
+
+exit $?

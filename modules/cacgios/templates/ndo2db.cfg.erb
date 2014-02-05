@@ -1,0 +1,32 @@
+lock_file=<%= scope.lookupvar('cacgios::params::nagios_prefix_dir') %>/var/ndo2db.lock
+
+ndo2db_user=nagios
+ndo2db_group=nagios
+
+socket_type=tcp
+
+socket_name=<%= scope.lookupvar('cacgios::params::nagios_prefix_dir') %>/var/ndo.sock
+
+tcp_port=5668
+
+use_ssl=0
+
+db_servertype=mysql
+db_host=localhost
+db_port=3306
+db_name=<%= scope.lookupvar('cacgios::params::cacti_dbname') %>
+db_prefix=npc_
+db_user=<%= scope.lookupvar('cacgios::params::cacti_dbuser') %>
+db_pass=<%= scope.lookupvar('cacgios::params::cacti_dbpassword') %>
+
+max_timedevents_age=1440
+max_systemcommands_age=10080
+max_servicechecks_age=10080
+max_hostchecks_age=10080
+max_eventhandlers_age=44640
+max_externalcommands_age=44640
+debug_level=0
+debug_verbosity=1
+debug_file=<%= scope.lookupvar('cacgios::params::nagios_prefix_dir') %>/var/ndo2db.debug
+max_debug_file_size=1000000
+

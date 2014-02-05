@@ -1,0 +1,68 @@
+#!/bin/bash
+
+initvar(){
+  # adss system infomation
+  adssbasepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+
+  # install system infomation
+  prog="mysqld"
+  prefix="<%= scope.lookupvar('mysqld::params::prefix_dir') %>"
+  confdir="<%= scope.lookupvar('mysqld::params::conf_dir') %>"
+  datadir="<%= scope.lookupvar('mysqld::params::data_dir') %>"
+  tempdir="<%= scope.lookupvar('mysqld::params::temp_dir') %>"
+  pkg="<%= scope.lookupvar('mysqld::params::pkg') %>"
+
+  nowversion="$(${prefix}/bin/mysqld -V 2>&1 | head -n1)"
+  orderversion="<%= scope.lookupvar('mysqld::params::version') %>"
+}
+
+# main process
+install(){
+  tar xvf ${adssbasepath}/${prog}/${pkg}
+  cd ${adssbasepath}/${prog}/${pkg%.*.*}
+  cmake . -DCMAKE_INSTALL_PREFIX=${prefix} \
+   -DDEFAULT_CHARSET=<%= scope.lookupvar('mysqld::params::charset') %> \
+   -DDEFAULT_COLLATION=<%= scope.lookupvar('mysqld::params::collation') %> \
+   -DEXTRA_CHARSETS=all \
+   -DMYSQL_DATADIR=${datadir} \
+   -DMYSQL_UNIX_ADDR=${tempdir}/mysql.sock \
+   -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+   -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+   -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+   -DWITH_PERFSCHEMA_STORAGE_ENGINE=1 \
+   -DWITHOUT_EXAMPLE_STORAGE_ENGINE=1 \
+   -DSYSCONFDIR=${confdir} \
+   -DWITH_DEBUG=0 \
+   -DENABLE_DEBUG_SYNC=0
+  make -j <%= @processorcount %> && make install
+  rm -rf ${adssbasepath}/${prog}/${pkg%.*.*}
+
+  chmod 755 ${prefix}/scripts/mysql_install_db
+
+  mkdir -pv ${datadir}
+  mkdir -pv ${datadir}/data
+  mkdir -pv ${datadir}/binlog
+  mkdir -pv ${tempdir}
+  mkdir -pv ${datadir}/innodb_ts
+  mkdir -pv ${datadir}/innodb_log
+  mkdir -pv ${confdir}
+  mkdir -pv ${confdir}/conf.d
+
+  chown -R mysql.mysql ${datadir}
+  chown -R mysql.mysql ${confdir}
+  chown -R mysql.mysql ${tempdir}
+
+  ${prefix}/scripts/mysql_install_db --user=mysql --datadir=${datadir} --basedir=${prefix}
+}
+
+uninstall(){
+  service ${prog} stop
+  [ -d ${prefix} ] && rm -f ${prefix}
+}
+
+initvar
+if [ "${nowversion}" != "${orderversion}" ]; then
+  uninstall
+  install
+fi
+

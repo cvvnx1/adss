@@ -1,0 +1,10 @@
+<% if @proxy_type == "ajp" -%>
+    ProxyPass <%= @ajp_wwwroot %> balancer://<%= @ajp_balancer %>/ stickysession=<%= @ajp_stickysession %> nofailover=<%= @ajp_onfailove %>
+    ProxyPassReverse <%= @ajp_wwwroot %> balancer://<%= @ajp_balancer %>/
+<% elsif @proxy_type == "ftp" -%>
+
+<% elsif @proxy_type == "connect" -%>
+
+<% elsif @proxy_type == "http" -%>
+
+<% end -%>

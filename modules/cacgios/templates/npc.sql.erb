@@ -1,0 +1,9 @@
+USE <%= scope.lookupvar('cacgios::params::cacti_dbname') %>;
+ALTER TABLE npc_eventhandlers ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_hostchecks ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_hoststatus ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_notifications ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_servicechecks ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_servicestatus ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_statehistory ADD long_output TEXT NOT NULL default '' AFTER output;
+ALTER TABLE npc_systemcommands ADD long_output TEXT NOT NULL default '' AFTER output;

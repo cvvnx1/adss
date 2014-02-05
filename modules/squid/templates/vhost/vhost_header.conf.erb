@@ -1,0 +1,13 @@
+<% if @www_root -%>
+<VirtualHost *:80>
+    ServerAdmin <%= @server_admin %>
+    DocumentRoot <%= @www_root %>
+    ServerName <%= @server_name %>
+    <% if @errorlog_enable == 'true' -%>
+    ErrorLog <%= scope['apache::params::log_dir'] -%>/vhost_error_<%= @name -%>.log
+    <% end -%>
+    <% if @accesslog_enable == 'true' -%>
+    CustomLog <%= scope['apache::params::log_dir'] -%>/vhost_access_<%= @name -%>.log combined
+    <% end -%>
+<% end -%>
+

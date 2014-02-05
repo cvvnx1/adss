@@ -1,0 +1,19 @@
+[mysqld]
+# Replication Master Server (default)
+# binary logging is required for replication
+log-bin=mysql-bin
+
+# binary logging format - mixed recommended
+binlog_format=mixed
+
+# required unique id between 1 and 2^32 - 1
+# defaults to 1 if master-host is not set
+# but will not function as a master if omitted
+server-id	= <%= @server_id %>
+
+<% if @server_id != '1' %>
+master-host = <%= @master_host %>
+master-user = <%= @master_user %>
+master-password = <%= @master_psw %>
+master-port = <%= @master_port %>
+<% end %>

@@ -1,0 +1,19 @@
+<IfModule mod_quotatab.c>
+  QuotaEngine on
+  QuotaDirectoryTally on
+  QuotaLog <%= scope.lookupvar('proftpd::params::log_dir') %>/quota.log
+  QuotaShowQuotas on
+  QuotaDisplayUnits Mb
+
+  <IfModule mod_quotatab_sql.c>
+    QuotaLock <%= scope.lookupvar('proftpd::params::prefix_dir') %>/var/proftpd.quotatab.lock
+
+    SQLNamedQuery get-quota-limit SELECT "* FROM quotalimits WHERE name = '%{0}' AND quota_type = '%{1}'"
+    SQLNamedQuery get-quota-tally SELECT "* FROM quotatallies WHERE name = '%{0}' AND quota_type = '%{1}'"
+    SQLNamedQuery update-quota-tally UPDATE "bytes_in_used = bytes_in_used + %{0}, bytes_out_used = bytes_out_used + %{1}, bytes_xfer_used = bytes_xfer_used + %{2}, files_in_used = files_in_used + %{3}, files_out_used = files_out_used + %{4}, files_xfer_used = files_xfer_used + %{5} WHERE name = '%{6}' AND quota_type = '%{7}'" quotatallies
+    SQLNamedQuery insert-quota-tally INSERT "%{0}, %{1}, %{2}, %{3}, %{4}, %{5}, %{6}, %{7}" quotatallies
+
+    QuotaLimitTable sql:/get-quota-limit
+    QuotaTallyTable sql:/get-quota-tally/update-quota-tally/insert-quota-tally
+  </IfModule>
+</IfModule>

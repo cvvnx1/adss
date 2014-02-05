@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# tomcat        Startup script for the Apache Tomcat Server
+#
+# chkconfig: 235 86 14
+# description: Apache Tomcat Server
+#
+# processname: java
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=tomcat
+java_home=<%= scope['tomcat::params::jave_home'] %>
+startexec=<%= scope['tomcat::params::prefix_dir'] %>/bin/startup.sh
+stopexec=<%= scope['tomcat::params::prefix_dir'] %>/bin/shutdown.sh
+runtime=<%= scope['tomcat::params::prefix_dir'] %>/bin/bootstrap.jar
+lockfile=/var/lock/subsys/${prog}
+RETVAL=0
+
+start() {
+    rm -f ${lockfile}
+    echo -n $"Starting $prog: "
+    JAVA_HOME=${java_home}
+    PATH=$PATH:$JAVA_HOME/bin
+    /bin/bash ${startexec} >/dev/null 2>&1
+    echo
+    [ -n "$(ps aux | grep ${runtime} | grep -v "grep")" ] && touch ${lockfile}
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    JAVA_HOME=${java_home}
+    PATH=$PATH:$JAVA_HOME/bin
+    /bin/bash ${stopexec} >/dev/null 2>&1
+    echo
+    rm -f ${lockfile}
+}
+
+restart() {
+    stop
+    start
+}
+
+rh_status() {
+    status
+}
+
+status() {
+    if [ -f ${lockfile} ]; then
+        echo "Tomcat is running..."
+        RETVAL=0
+    else
+        echo "Tomcat is stop..."
+        RETVAL=3
+    fi
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        rh_status
+        RETVAL=$?
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo $"Usage: $prog {start|stop|restart|status}"
+        RETVAL=2
+esac
+
+exit $RETVAL

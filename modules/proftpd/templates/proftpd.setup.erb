@@ -1,0 +1,55 @@
+#!/bin/bash
+
+initvar(){
+  # adss system infomation
+  adssbasepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+
+  # install system infomation
+  prog="proftpd"
+  prefix="<%= scope.lookupvar('proftpd::params::prefix_dir') %>"
+  confdir="<%= scope.lookupvar('proftpd::params::conf_dir') %>"
+  datadir="<%= scope.lookupvar('proftpd::params::data_dir') %>"
+  tempdir="<%= scope.lookupvar('proftpd::params::temp_dir') %>"
+  pkg="<%= scope.lookupvar('proftpd::params::pkg') %>"
+  mysql_lib="<%= scope.lookupvar('proftpd::params::mysql_lib_dir') %>"
+  mysql_include="<%= scope.lookupvar('proftpd::params::mysql_include_dir') %>"
+
+  pubdir="<%= scope.lookupvar('proftpd::params::pub_dir') %>"
+
+  nowversion="$(${prefix}/sbin/proftpd -v 2>&1 | head -n1)"
+  orderversion="<%= scope.lookupvar('proftpd::params::version') %>"
+}
+
+# main process
+install(){
+  tar xvf ${adssbasepath}/${prog}/${pkg} -C ${adssbasepath}/${prog}
+  cd ${adssbasepath}/${prog}/${pkg%.*.*}
+  ./configure --prefix=${prefix} \
+   --with-modules=mod_sql:mod_sql_mysql:mod_quotatab:mod_quotatab_sql \
+   --with-libraries=${mysql_lib} \
+   --with-includes=${mysql_include}
+  make -j <%= @processorcount %> && make install
+  rm -rf ${adssbasepath}/${prog}/${pkg%.*.*}
+
+  mkdir -pv ${confdir}/conf.d
+
+  mkdir -pv ${datadir}
+  mkdir -pv ${pubdir}
+
+  chown -R ftp.ftp ${datadir}
+  chmod 755 ${datadir}
+  chmod 777 ${pubdir}
+
+}
+
+uninstall(){
+  service ${prog} stop
+  [ -d ${prefix} ] && rm -f ${prefix}
+}
+
+initvar
+if [ "${nowversion}" != "${orderversion}" ]; then
+  uninstall
+  install
+fi
+
