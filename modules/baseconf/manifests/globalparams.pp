@@ -10,8 +10,10 @@
 
 class baseconf::globalparams {
 
-    $master    = 'puppet.mhszdomain.com'
-    $marker    = 'adss_marker'
+    $master        = 'puppet.mhszdomain.com'
+    $marker        = 'adss_marker'
+
+    $statusfile    = 'adss_status'
 
     $basepath      = $kernel ? {
         /(?i-mx:Linux)/       => '/etc/adss',
@@ -41,10 +43,10 @@ class baseconf::globalparams {
         /(?i-mx:CentOS)/      => '/etc/profile',
         }
 
-    $adminuser     = $operatingsystem ? {
-        /(?i-mx:CentOS)/      => 'root',
-        }
-
+#    $adminuser     = $operatingsystem ? {
+#        /(?i-mx:CentOS)/      => 'root',
+#        }
+$adminuser = 'root'
     $admingroup    = $operatingsystem ? {
         /(?i-mx:CentOS)/      => 'root',
         }

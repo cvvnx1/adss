@@ -4,7 +4,8 @@ class mysqld::params {
     # install parameters       #
     ############################
 #    $version                  = '/usr/local/mysql/bin/mysqld  Ver 5.5.27 for Linux on x86_64 (Source distribution)'
-    $version                  = '/usr/local/mysql/bin/mysqld  Ver 5.5.27-log for Linux on x86_64 (Source distribution)'
+#    $version                  = '/usr/local/mysql/bin/mysqld  Ver 5.5.27-log for Linux on x86_64 (Source distribution)'
+    $version                  = 'mysql-5.5.27'
 
     $compile_pkg              = 'mysql-5.5.27.tar.gz'
 

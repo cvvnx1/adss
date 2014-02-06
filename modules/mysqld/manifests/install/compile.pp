@@ -10,5 +10,6 @@ class mysqld::install::compile {
         cwd      => "${baseconf::globalparams::basepath}/mysqld",
         command  => "${baseconf::globalparams::basepath}/mysqld/setup.sh",
         path     => "${baseconf::globalparams::binpath}",
+        timeout  => 900,
     }
 }

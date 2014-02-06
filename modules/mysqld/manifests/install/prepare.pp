@@ -10,7 +10,7 @@ class mysqld::install::prepare {
     File {
         owner   => "${baseconf::globalparams::adminuser}",
         group   => "${baseconf::globalparams::admingroup}",
-        mode    => "0755",
+        mode    => "0644",
     }
 
     # resource declare

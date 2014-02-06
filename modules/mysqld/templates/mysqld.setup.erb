@@ -2,7 +2,8 @@
 
 initvar(){
   # adss system infomation
-  adssbasepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+  adss_basepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+  adss_statusfile=<%= scope.lookupvar('baseconf::globalparams::statusfile') %>
 
   # OS information
   processorcount="<%= @processorcount %>"
@@ -13,9 +14,6 @@ initvar(){
 
   pkg="<%= scope.lookupvar('mysqld::params::compile_pkg') %>"
 
-  nowversion="$(${prefix}/bin/mysqld -V 2>&1 | head -n1)"
-  orderversion="<%= scope.lookupvar('mysqld::params::version') %>"
-
   prefix="<%= scope.lookupvar('mysqld::params::prefix_dir') %>"
   confdir="<%= scope.lookupvar('mysqld::params::conf_dir') %>"
   datadir="<%= scope.lookupvar('mysqld::params::data_dir') %>"
@@ -23,12 +21,14 @@ initvar(){
   sock="<%= scope.lookupvar('mysqld::params::collation') %>"
   charset="<%= scope.lookupvar('mysqld::params::charset') %>"
   collation="<%= scope.lookupvar('mysqld::params::collation') %>"
+
+  nowversion="$(cat ${prefix}/${adss_statusfile} | grep "version" | sed "s/.*=//g")"
+  orderversion="<%= scope.lookupvar('mysqld::params::version') %>"
 }
 
-# main process
-install(){
-  tar xvf ${adssbasepath}/${prog}/${pkg}
-  cd ${adssbasepath}/${prog}/${pkg%.*.*}
+compile(){
+  tar xvf ${adss_basepath}/${prog}/${pkg}
+  cd ${adss_basepath}/${prog}/${pkg%.*.*}
   cmake . -DCMAKE_INSTALL_PREFIX=${prefix} \
    -DDEFAULT_CHARSET=${charset} \
    -DDEFAULT_COLLATION=${collation} \
@@ -44,10 +44,10 @@ install(){
    -DWITH_DEBUG=0 \
    -DENABLE_DEBUG_SYNC=0
   make -j ${processorcount} && make install
-  rm -rf ${adssbasepath}/${prog}/${pkg%.*.*}
+  rm -rf ${adss_basepath}/${prog}/${pkg%.*.*}
+}
 
-  chmod 755 ${prefix}/scripts/mysql_install_db
-
+post(){
   mkdir -pv ${datadir}
   mkdir -pv ${datadir}/data
   mkdir -pv ${datadir}/binlog
@@ -62,19 +62,35 @@ install(){
   chown -R mysql.mysql ${tempdir}
 
   rm -f /etc/my.cnf
+  chmod 755 ${prefix}/scripts/mysql_install_db
   ${prefix}/scripts/mysql_install_db --user=mysql --datadir=${datadir} --basedir=${prefix}
+}
 
+regpath(){
   # path register
   if [ $(cat /etc/profile | grep mysql | wc -l) -eq 0 ]; then
     echo "export PATH=\$PATH:${prefix}/bin" >> /etc/profile
   fi
+}
 
+adsstag(){
+  echo "version=${orderversion}" > ${prefix}/${adss_statusfile}
+}
+
+# main process
+install(){
+  compile
+  post
+  regpath
+  adsstag
   return 0
 }
 
 uninstall(){
   service ${prog} stop
+  [ -f "${prefix}/${adss_statusfile}" ] && rm -f ${prefix}/${adss_statusfile}
   [ -d ${prefix} ] && rm -f ${prefix}
+
   # path unregister
   sed -i "/mysql/d" ${profile}
 }
