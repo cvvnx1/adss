@@ -1,45 +1,49 @@
 class mysqld::install::prepare {
 
-    include baseconf::globalparams
+    include baseconf::globalparams, mysqld::params
 
     # step control
-    Package["prepkg_mysqld"] -> 
+    Package["prepkg"] -> File["worker_dir"] -> File["install_script"]
+    Package["prepkg"] -> Group["daemon_group"] -> User["daemon_user"]
 
     # resource template declare
     File {
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
+        owner   => "${baseconf::globalparams::adminuser}",
+        group   => "${baseconf::globalparams::admingroup}",
+        mode    => "0755",
     }
 
     # resource declare
-    package { "prepkg_mysqld":
+    package { "prepkg":
         ensure  => present,
-        name    => [ "gcc", "gcc-c++", "make", "cmake", "bison", "ncurses-devel" ] :
+        name    => [ "gcc", "gcc-c++", "make", "cmake", "bison", "ncurses-devel" ],
     }
 
-    file { "${baseconf::globalparams::basepath}/mysqld":
-        ensure => present,
-        source => "puppet:///modules/mysqld",
+    file { "worker_dir":
+        ensure  => present,
+        source  => "puppet:///modules/mysqld",
+        path    => "${baseconf::globalparams::basepath}/mysqld",
         recurse => true,
     }
 
-    file { "${baseconf::globalparams::basepath}/mysqld/setup.sh":
-        ensure => present,
-        mode => 0755,
+    file { "install_script":
+        ensure  => present,
+        mode    => 0755,
         content => template("mysqld/mysqld.setup.erb"),
+        path    => "${baseconf::globalparams::basepath}/mysqld/setup.sh",
     }
 
-    user { "mysql":
-        ensure => present,
-        comment => 'mysqld user',
-        gid => 'mysql',
-        shell => '/sbin/nologin',
-        require => Group["mysql"],
+    user { "daemon_user":
+        ensure  => present,
+        name    => "${mysqld::params::daemon_user}",
+        comment => "${mysqld::params::daemon_user} user",
+        gid     => "${mysqld::params::daemon_group}",
+        shell   => "/sbin/nologin",
     }
 
-    group { "mysql":
-        ensure => present,
+    group { "daemon_group":
+        ensure  => present,
+        name    => "${mysqld::params::daemon_group}",
     }
 }
 

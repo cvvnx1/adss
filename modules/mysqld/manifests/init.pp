@@ -1,3 +1,6 @@
 class mysqld {
-    include mysqld::params, mysqld::preinstall, mysqld::install, mysqld::config, mysqld::service 
+    include mysqld::params
+    include mysqld::install::prepare, mysqld::install::compile, mysqld::install::post
+    include mysqld::config::initrc
+    include mysqld::service::control
 }

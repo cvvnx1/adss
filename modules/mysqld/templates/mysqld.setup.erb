@@ -4,16 +4,25 @@ initvar(){
   # adss system infomation
   adssbasepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
 
+  # OS information
+  processorcount="<%= @processorcount %>"
+  profile="/etc/profile"
+
   # install system infomation
   prog="mysqld"
-  prefix="<%= scope.lookupvar('mysqld::params::prefix_dir') %>"
-  confdir="<%= scope.lookupvar('mysqld::params::conf_dir') %>"
-  datadir="<%= scope.lookupvar('mysqld::params::data_dir') %>"
-  tempdir="<%= scope.lookupvar('mysqld::params::temp_dir') %>"
-  pkg="<%= scope.lookupvar('mysqld::params::pkg') %>"
+
+  pkg="<%= scope.lookupvar('mysqld::params::compile_pkg') %>"
 
   nowversion="$(${prefix}/bin/mysqld -V 2>&1 | head -n1)"
   orderversion="<%= scope.lookupvar('mysqld::params::version') %>"
+
+  prefix="<%= scope.lookupvar('mysqld::params::prefix_dir') %>"
+  confdir="<%= scope.lookupvar('mysqld::params::conf_dir') %>"
+  datadir="<%= scope.lookupvar('mysqld::params::data_dir') %>"
+
+  sock="<%= scope.lookupvar('mysqld::params::collation') %>"
+  charset="<%= scope.lookupvar('mysqld::params::charset') %>"
+  collation="<%= scope.lookupvar('mysqld::params::collation') %>"
 }
 
 # main process
@@ -21,11 +30,11 @@ install(){
   tar xvf ${adssbasepath}/${prog}/${pkg}
   cd ${adssbasepath}/${prog}/${pkg%.*.*}
   cmake . -DCMAKE_INSTALL_PREFIX=${prefix} \
-   -DDEFAULT_CHARSET=<%= scope.lookupvar('mysqld::params::charset') %> \
-   -DDEFAULT_COLLATION=<%= scope.lookupvar('mysqld::params::collation') %> \
+   -DDEFAULT_CHARSET=${charset} \
+   -DDEFAULT_COLLATION=${collation} \
    -DEXTRA_CHARSETS=all \
    -DMYSQL_DATADIR=${datadir} \
-   -DMYSQL_UNIX_ADDR=${tempdir}/mysql.sock \
+   -DMYSQL_UNIX_ADDR=${sock} \
    -DWITH_INNOBASE_STORAGE_ENGINE=1 \
    -DWITH_ARCHIVE_STORAGE_ENGINE=1 \
    -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
@@ -34,7 +43,7 @@ install(){
    -DSYSCONFDIR=${confdir} \
    -DWITH_DEBUG=0 \
    -DENABLE_DEBUG_SYNC=0
-  make -j <%= @processorcount %> && make install
+  make -j ${processorcount} && make install
   rm -rf ${adssbasepath}/${prog}/${pkg%.*.*}
 
   chmod 755 ${prefix}/scripts/mysql_install_db
@@ -42,7 +51,7 @@ install(){
   mkdir -pv ${datadir}
   mkdir -pv ${datadir}/data
   mkdir -pv ${datadir}/binlog
-  mkdir -pv ${tempdir}
+  mkdir -pv ${datadir}/tmp
   mkdir -pv ${datadir}/innodb_ts
   mkdir -pv ${datadir}/innodb_log
   mkdir -pv ${confdir}
@@ -52,12 +61,22 @@ install(){
   chown -R mysql.mysql ${confdir}
   chown -R mysql.mysql ${tempdir}
 
+  rm -f /etc/my.cnf
   ${prefix}/scripts/mysql_install_db --user=mysql --datadir=${datadir} --basedir=${prefix}
+
+  # path register
+  if [ $(cat /etc/profile | grep mysql | wc -l) -eq 0 ]; then
+    echo "export PATH=\$PATH:${prefix}/bin" >> /etc/profile
+  fi
+
+  return 0
 }
 
 uninstall(){
   service ${prog} stop
   [ -d ${prefix} ] && rm -f ${prefix}
+  # path unregister
+  sed -i "/mysql/d" ${profile}
 }
 
 initvar
