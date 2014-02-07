@@ -2,7 +2,8 @@
 
 recoding from old adss puppet module, more flex and strong...
 
-# Finished module:
+Read ./manifests/sample.pp first. It's a sample for node declare
+
 # baseconf
 Base variable for adss system
 # mysql (with replication role)
