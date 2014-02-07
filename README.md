@@ -1,8 +1,11 @@
-# v1.6.2
+# adss v1.6.2
 
-Refactored code for ADSS. Efficiency of coding and debug improved much....
+recoding from old adss puppet module, more flex and strong...
 
 # Finished module:
 # baseconf
-# mysql (with role)
+Base variable for adss system
+# mysql (with replication role)
+compile and install mysqld server
 # httpd (with vhost & ajp proxy)
+compile and install apache httpd server
