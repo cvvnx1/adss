@@ -1,0 +1,75 @@
+#!/bin/bash
+
+initvar(){
+  # adss system infomation
+  adss_basepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+  adss_statusfile=<%= scope.lookupvar('baseconf::globalparams::statusfile') %>
+
+  # OS information
+  processorcount="<%= @processorcount %>"
+  profile="/etc/profile"
+
+  # install system infomation
+  prog="httpd"
+
+  pkg="<%= scope.lookupvar('httpd::params::pkg') %>"
+
+  prefix="<%= scope.lookupvar('httpd::params::prefix_dir') %>"
+  confdir="<%= scope.lookupvar('httpd::params::conf_dir') %>"
+  confddir="<%= scope.lookupvar('httpd::params::confd_dir') %>"
+
+  compile_opt="<%= scope.lookupvar('httpd::params::compile_opt') %>"
+
+  nowversion="$(cat ${prefix}/${adss_statusfile} | grep "version" | sed "s/.*=//g")"
+  orderversion="<%= scope.lookupvar('httpd::params::version') %>"
+}
+
+compile(){
+  tar xvf ${adss_basepath}/${prog}/${pkg} -C ${adss_basepath}/${prog}
+  cd ${adss_basepath}/${prog}/${pkg%.*.*}
+  ./configure --prefix=${prefix} ${compile_opt}
+  make -j <%= @processorcount %> && make install
+  rm -rf ${adss_basepath}/${prog}/${pkg%.*.*}
+}
+
+post(){
+  mkdir -pv ${confddir}
+
+  chmod 755 ${confddir}
+}
+
+regpath(){
+  # path register
+  if [ $(cat ${profile} | grep httpd | wc -l) -eq 0 ]; then
+    echo "export PATH=\$PATH:${prefix}/bin" >> ${profile}
+  fi
+}
+
+adsstag(){
+  echo "version=${orderversion}" > ${prefix}/${adss_statusfile}
+}
+
+# main process
+install(){
+  compile
+  post
+  regpath
+  adsstag
+  return 0
+}
+
+uninstall(){
+  service ${prog} stop
+  [ -f "${prefix}/${adss_statusfile}" ] && rm -f ${prefix}/${adss_statusfile}
+  [ -d ${prefix} ] && rm -rf ${prefix}
+
+  # path unregister
+  sed -i "/httpd/d" ${profile}
+}
+
+initvar
+if [ "${nowversion}" != "${orderversion}" ]; then
+  uninstall
+  install
+fi
+

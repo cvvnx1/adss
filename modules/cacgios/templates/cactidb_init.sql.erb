@@ -1,4 +1,0 @@
-CREATE DATABASE <%= scope.lookupvar('cacgios::params::cacti_dbname') %>;
-GRANT ALL PRIVILEGES ON <%= scope.lookupvar('cacgios::params::cacti_dbname') %>.* TO '<%= scope.lookupvar('cacgios::params::cacti_dbuser') %>'@'localhost' IDENTIFIED BY '<%= scope.lookupvar('cacgios::params::cacti_dbpassword') %>';
-GRANT ALL PRIVILEGES ON <%= scope.lookupvar('cacgios::params::cacti_dbname') %>.* TO '<%= scope.lookupvar('cacgios::params::cacti_dbuser') %>'@'127.0.0.1' IDENTIFIED BY '<%= scope.lookupvar('cacgios::params::cacti_dbpassword') %>';
-FLUSH PRIVILEGES;

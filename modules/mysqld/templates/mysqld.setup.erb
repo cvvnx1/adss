@@ -69,7 +69,7 @@ post(){
 regpath(){
   # path register
   if [ $(cat /etc/profile | grep mysql | wc -l) -eq 0 ]; then
-    echo "export PATH=\$PATH:${prefix}/bin" >> /etc/profile
+    echo "export PATH=\$PATH:${prefix}/bin" >> ${profile}
   fi
 }
 

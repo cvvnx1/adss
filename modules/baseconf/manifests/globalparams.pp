@@ -43,10 +43,10 @@ class baseconf::globalparams {
         /(?i-mx:CentOS)/      => '/etc/profile',
         }
 
-#    $adminuser     = $operatingsystem ? {
-#        /(?i-mx:CentOS)/      => 'root',
-#        }
-$adminuser = 'root'
+    $adminuser     = $operatingsystem ? {
+        /(?i-mx:CentOS)/      => 'root',
+        }
+
     $admingroup    = $operatingsystem ? {
         /(?i-mx:CentOS)/      => 'root',
         }

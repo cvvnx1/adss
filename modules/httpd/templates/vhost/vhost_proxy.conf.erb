@@ -1,0 +1,18 @@
+<% if @name -%>
+<% if @proxy_type == "ajp" -%>
+Header add Set-Cookie "ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/" env=BALANCER_ROUTE_CHANGED
+<proxy balancer://<%= @ajp_balancer %>>
+  <% $i = 0 -%>
+  <% while $i < @host_name.size do -%>
+  BalancerMember ajp://<%= @host_name[$i] %>:<%= @port_name[$i] %> loadfactor=<%= @ajp_loadfactor[$i] %> route=<%= @ajp_route[$i] %>
+  <% $i += 1 -%>
+  <% end -%>
+  ProxySet stickysession=<%= @ajp_stickysession %>
+<% elsif @proxy_type == "ftp" -%>
+<% elsif @proxy_type == "connect" -%>
+<% elsif @proxy_type == "http" -%>
+</proxy>
+ProxyPass <%= @ajp_wwwroot %> balancer://<%= @ajp_balancer %>
+ProxyPassReverse <%= @ajp_wwwroot %> http://<%= @server_name %>/
+<% end -%>
+<% end -%>

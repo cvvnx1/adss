@@ -7,6 +7,7 @@ class mysqld::install::post {
     Class["mysqld::install::compile"] -> File["log_dir"]
     Class["mysqld::install::compile"] -> File["pid_dir"]
     Class["mysqld::install::compile"] -> File["data_dir"]
+
     # resource template declare
     File {
         owner   => "${mysqld::params::daemon_user}",
