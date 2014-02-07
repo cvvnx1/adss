@@ -1,0 +1,81 @@
+CREATE DATABASE IF NOT EXISTS <%= @mysql_dbname %>;
+
+GRANT all privileges
+ ON <%= @mysql_dbname %>.* TO
+ '<%= @mysql_user %>'@'%' IDENTIFIED BY '<%= @mysql_psw %>';
+FLUSH PRIVILEGES;
+
+USE <%= @mysql_dbname %>;
+CREATE TABLE IF NOT EXISTS <%= @mysql_dbname %>.records (
+ id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+ zone VARCHAR(255) NOT NULL,
+ host VARCHAR(255) NOT NULL DEFAULT '@',
+ type ENUM('MX','CNAME','NS','SOA','A','PTR') NOT NULL,
+ data VARCHAR(255) DEFAULT NULL,
+ ttl INT(11) NOT NULL DEFAULT '800',
+ view CHAR(20) DEFAULT 'any',
+ mx_priority INT(11) DEFAULT NULL,
+ priority INT(3) DEFAULT 255,
+ refresh INT(11) NOT NULL DEFAULT '3600',
+ retry INT(11) NOT NULL DEFAULT '3600',
+ expire INT(11) NOT NULL DEFAULT '86400',
+ minimum INT(11) NOT NULL DEFAULT '3600',
+ serial bigINT(20) NOT NULL DEFAULT '2013100500',
+ resp_person VARCHAR(64) NOT NULL DEFAULT 'root.domain.com.',
+ primary_ns VARCHAR(64) NOT NULL DEFAULT 'ns1.domain.com.',
+ data_count INT(11) NOT NULL DEFAULT '0',
+ PRIMARY KEY(id),
+ KEY type (type),
+ KEY host (host),
+ KEY zone (zone)
+);
+
+--LOCK TABLES <%= @mysql_dbname %>.records WRITE;
+
+--SOA
+/*
+INSERT INTO <%= @mysql_dbname %>.records
+ (zone,host,type,data,ttl,mx_priority,refresh,retry,expire,minimum,serial,resp_person,primary_ns,data_count)
+VALUES
+ ('cvvnx1.com','@','SOA','ns1.cvvnx1.com.',10,NULL,3600,3600,86400,10,2013100500,'ns1.cvvnx1.com.','ns1.cvvnx1.com.',0); 
+*/
+
+--@ NS
+/*
+INSERT INTO <%= @mysql_dbname %>.records
+ (zone,host,type,data)
+VALUES
+ ('cvvnx1.com', '@', 'NS', 'ns1.cvvnx1.com.'),
+ ('cvvnx1.com', '@', 'NS', 'ns2.cvvnx1.com.'); 
+*/
+
+--NS A
+/*
+INSERT INTO <%= @mysql_dbname %>.records
+ (zone,host,type,data)
+VALUES
+ ('cvvnx1.com', 'ns1', 'A', '1.1.1.1'),
+ ('cvvnx1.com', 'ns2', 'A', '1.1.1.1'); 
+*/
+
+--A
+/*
+INSERT INTO <%= @mysql_dbname %>.records
+ (zone,host,type,data,ttl,view,priority)
+VALUES
+ ('cvvnx1.com', 'www', 'A', '1.1.1.1', 3600, 'CNC',200),
+ ('cvvnx1.com', 'www', 'A', '2.2.2.2', 3600, 'CHINANET',200),
+ ('cvvnx1.com', 'www', 'A', '1.1.1.1', 3600, 'any',255); 
+*/
+
+--CNAME
+/*
+INSERT INTO <%= @mysql_dbname %>.records
+ (zone,host,type,data,ttl,view,priority)
+VALUES
+ ('cvvnx1.com', 'man', 'CNAME', 'www','CNC',200),
+ ('cvvnx1.com', 'man', 'CNAME', 'www','CHINANET',200),
+ ('cvvnx1.com', 'man', 'CNAME', 'www','any',255);
+*/
+
+--UNLOCK TABLES;

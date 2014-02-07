@@ -1,0 +1,93 @@
+#!/bin/sh
+#
+# proftpd   This shell script takes care of starting and stopping
+#           the ProFTP subsystem (proftpd).
+#
+# chkconfig: 235 72 28
+# description:	proftp server.
+# processname: proftpd
+# config: <%= scope.lookupvar('proftpd::params::conf_dir') %>/proftpd.conf
+# pidfile: <%= scope.lookupvar('proftpd::params::pid_dir') %>/proftpd.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+prog=proftpd
+prefix=<%= scope.lookupvar('proftpd::params::prefix_dir') %>
+exec=${prefix}/sbin/proftpd
+conffile=<%= scope.lookupvar('proftpd::params::conf_dir') %>/proftpd.conf
+pidfile=<%= scope.lookupvar('proftpd::params::pid_dir') %>/proftpd.pid
+lockfile=<%= scope.lookupvar('proftpd::params::lock_dir') %>/${prog}
+
+[ -e /etc/sysconfig/${prog} ] && . /etc/sysconfig/${prog}
+
+start(){
+  [ -x ${exec} ] || exit 5
+
+  local RETVAL
+
+  if [ -f ${pidfile} ]; then
+    action $"Starting ${prog}: " /bin/true
+  else
+    ${exec} >/dev/null 2>&1
+    RETVAL=$?
+    if [ ${RETVAL} = 0 ]; then
+      touch ${lockfile}
+      action $"Starting ${prog}: " /bin/true
+    else
+      action $"Starting ${prog}: " /bin/false
+    fi
+  fi
+
+  return ${RETVAL}
+}
+
+stop(){
+  if [ -f ${pidfile} ]; then
+    PID=$(cat "${pidfile}")
+    kill -9 ${PID} >/dev/null 2>&1
+    sleep 2
+    rm -f ${pidfile}
+    rm -f ${lockfile}
+    action $"Stopping ${prog}: " /bin/true
+  else
+    rm -f ${lockfile}
+    action $"Stopping ${prog}: " /bin/true
+  fi
+
+  return 0
+}
+ 
+restart(){
+    stop
+    sleep 2
+    start
+}
+
+rh_status() {
+    status -p ${pidfile} ${exec}
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    rh_status
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 2
+esac
+
+exit $?

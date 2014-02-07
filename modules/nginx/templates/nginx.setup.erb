@@ -1,0 +1,46 @@
+#!/bin/bash
+
+initvar(){
+  # adss system infomation
+  adssbasepath=<%= scope.lookupvar('baseconf::globalparams::basepath') %>
+  adssmarker=<%= scope.lookupvar('baseconf::globalparams::marker') %>
+
+  # install system infomation
+  prog=nginx
+  prefix="<%= scope.lookupvar('nginx::params::nx_prefix_dir') %>"
+  sysconfdir="${prefix}/conf"
+  pkg="nginx-1.2.3.tar.gz"
+  pcrepkg="pcre-8.31.tar.gz"
+  zlibpkg="zlib-1.2.7.tar.gz"
+
+  nowversion="$(${prefix}/sbin/nginx -v 2>&1 | head -n1)"
+  orderversion="<%= scope.lookupvar('nginx::params::nx_version') %>"
+}
+
+# main process
+install(){
+  tar xvf ${adssbasepath}/nginx/${pkg}
+  cd ${adssbasepath}/nginx/${pkg%.*.*}
+  cp ${adssbasepath}/nginx/${pcrepkg} ./
+  cp ${adssbasepath}/nginx/${zlibpkg} ./
+  tar xvf ${pcrepkg}
+  tar xvf ${zlibpkg}
+  ./configure --prefix=${prefix} --with-pcre=./${pcrepkg%.*.*} --with-zlib=./${zlibpkg%.*.*} --with-http_stub_status_module
+  make -j <%= @processorcount %>
+  make install
+  rm -rf ${adssbasepath}/nginx/${pkg%.*.*}
+}
+
+uninstall(){
+  service ${prog} stop
+  [ -d ${prefix} ] && rm -f ${prefix}
+  groupdel nginx
+  userdel nginx
+}
+
+initvar
+if [ "${nowversion}" != "${orderversion}" ]; then
+  uninstall
+  install
+fi
+

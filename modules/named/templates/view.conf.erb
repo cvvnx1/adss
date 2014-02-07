@@ -1,0 +1,38 @@
+<% if @view_name -%>
+    <% $i = 0 -%>
+    <% while $i < @view_name.size do -%>
+view "<%= @view_name[$i] %>" { 
+  match-clients { <%= @match_clients_acl[$i] %>; };
+  allow-query-cache { <%= @allow_qurey_cache[$i] %>; };
+  allow-recursion { <%= @allow_recursion[$i] %>; };
+  allow-transfer { <%= @allow_transfer[$i] %>; };
+  recursion <%= @recursion[$i] %>;
+ 
+  dlz "Mysql zone" {
+    database "mysql
+    {host=<%= @mysql_host %> dbname=<%= @mysql_dbname %> ssl=<%= @mysql_ssl %> port=<%= @mysql_port %> user=<%= @mysql_user %> pass=<%= @mysql_psw %>}
+    {SELECT zone FROM records WHERE zone='$zone$' AND view='any' LIMIT 1}
+    {SELECT ttl,type,mx_priority,case WHEN LOWER(type)='txt' THEN CONCAT('\"',data,'\"') WHEN LOWER(type)='soa' THEN CONCAT_WS('',data,resp_person,serial,refresh,retry,expire,minimum) ELSE data END AS mydata FROM records WHERE zone='$zone$' AND host='$record$' AND view=(SELECT view FROM records WHERE zone='$zone$' AND host='$record$' AND (view='<%= @view_name[$i] %>' OR view='any') ORDER BY priority ASC LIMIT 1)}";
+  };
+};
+
+include "<%= scope['named::params::conf_dir'] %>/conf.d/<%= @view_name[$i] %>.acl";
+
+    <% $i += 1 -%>
+    <% end -%>
+view "any" {
+  match-clients { any; };
+#  allow-query-cache { any; };
+#  allow-recursion { any; };
+#  allow-transfer { any; };
+  recursion yes;
+
+  dlz "Mysql zone" {
+    database "mysql
+    {host=<%= @mysql_host %> dbname=<%= @mysql_dbname %> ssl=<%= @mysql_ssl %> port=<%= @mysql_port %> user=<%= @mysql_user %> pass=<%= @mysql_psw %>}
+    {SELECT zone FROM records WHERE zone='$zone$' AND view='any' LIMIT 1}
+    {SELECT ttl,type,mx_priority,case WHEN LOWER(type)='txt' THEN CONCAT('\"',data,'\"') WHEN LOWER(type)='soa' THEN CONCAT_WS('',data,resp_person,serial,refresh,retry,expire,minimum) ELSE data END AS mydata FROM records WHERE zone='$zone$' AND host='$record$' AND view='any'}";
+  };
+};
+
+<% end -%>

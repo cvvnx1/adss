@@ -1,0 +1,21 @@
+[main]
+    user = puppet
+    group = puppet
+    report = true
+    reports = log,store
+    logdir = /var/log/puppet
+
+    rundir = /var/run/puppet
+    ssldir = $vardir/ssl
+
+[master]
+    certname = <%= scope.lookupvar('baseconf::globalparams::master') %>
+
+[agent]
+    pluginsync = false
+    report = true
+    server = <%= scope.lookupvar('baseconf::globalparams::master') %>
+    classfile = $vardir/classes.txt
+
+    localconfig = $vardir/localconfig
+

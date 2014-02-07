@@ -1,0 +1,9 @@
+[mysqld]
+server-id	= <%= @server_id %>
+
+<% if @server_id != '1' %>
+master-host = <%= @master_host %>
+master-user = <%= @master_user %>
+master-password = <%= @master_psw %>
+master-port = <%= @master_port %>
+<% end %>
