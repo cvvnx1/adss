@@ -1,8 +1,11 @@
 # adss v1.6.2
 
-recoding from old adss puppet module, more flex and strong...
+Summary:
+  recoding from old adss puppet module, more flex and strong...
 
-Read ./manifests/sample.pp first. It's a sample for node declare
+Usage:
+  put all file in puppet configuration folder and declare you node in ./manifests/
+  Read ./manifests/sample.pp first. It's a sample for node declare
 
 # baseconf
 Base variable for adss system
