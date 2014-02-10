@@ -6,6 +6,19 @@
 # }
 
 ############################
+# System base section      #
+############################
+# node 'test.test.com' {
+#    baseconf::yumrepo { 'remote':
+#        reponame      => "remote",
+#        enabled       => "1",
+#        baseurl       => "http://yum.test.com/",
+#        gpgkey        => "http://yum.test.com/RPM-GPG-KEY-CentOS-6",
+#        priority      => "20",
+#    }
+# }
+
+############################
 # Mysqld node sample       #
 ############################
 # node 'mysql.cvvnx1.com' {
