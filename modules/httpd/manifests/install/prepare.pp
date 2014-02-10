@@ -35,14 +35,15 @@ class httpd::install::prepare {
 
     user { "daemon_user":
         ensure  => present,
-        name    => "${httpd::params::daemon_user}",
-        comment => "${httpd::params::daemon_user} user",
-        gid     => "${httpd::params::daemon_group}",
+        name    => "${httpd::daemon_user}",
+        comment => "${httpd::daemon_user} user",
+        gid     => "${httpd::daemon_group}",
         shell   => '/sbin/nologin',
     }
 
     group { "daemon_group":
         ensure  => present,
-        name    => "${httpd::params::daemon_group}",
+        name    => "${httpd::daemon_group}",
     }
 }
+

@@ -1,13 +1,14 @@
-class httpd::params {
+class httpd::params (
+    $prefix_dir     = '/usr/local/httpd',
+) {
 
     ############################
     # install parameters       #
     ############################
     $version        = 'httpd-2.2.25'
 
-    $pkg    = 'httpd-2.2.25.tar.gz'
+    $pkg            = 'httpd-2.2.25.tar.gz'
 
-    $prefix_dir     = '/usr/local/httpd'
     $conf_dir       = '/usr/local/httpd/conf'
     $confd_dir      = '/usr/local/httpd/conf/conf.d'
 

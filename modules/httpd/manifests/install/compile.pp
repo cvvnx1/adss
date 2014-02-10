@@ -1,6 +1,6 @@
 class httpd::install::compile {
 
-    include baseconf::globalparams, httpd::params
+    include baseconf::globalparams
 
     # step control
     Class["httpd::install::prepare"] -> Exec ["install_script"]
@@ -13,3 +13,4 @@ class httpd::install::compile {
         timeout  => 900,
     }
 }
+

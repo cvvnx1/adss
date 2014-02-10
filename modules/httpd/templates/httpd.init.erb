@@ -6,8 +6,8 @@
 # description: The Apache HTTP Server is an efficient and extensible  \
 #	       server implementing the current HTTP standards.
 # processname: httpd
-# config: <%= scope.lookupvar('httpd::params::conf_dir') %>/httpd.conf
-# pidfile: <%= scope.lookupvar('httpd::params::pid_dir') %>/httpd.pid
+# config: <%= scope.lookupvar('httpd::conf_dir') %>/httpd.conf
+# pidfile: <%= scope.lookupvar('httpd::pid_dir') %>/httpd.pid
 #
 ### BEGIN INIT INFO
 # Provides: httpd
@@ -34,10 +34,10 @@ INITLOG_ARGS=""
 # work correctly with a thread-based MPM; notably PHP will refuse to start.
 
 # Path to the apachectl script, server binary, and short-form for messages.
-apachectl=<%= scope.lookupvar('httpd::params::prefix_dir') %>/bin/apachectl
-httpd=<%= scope.lookupvar('httpd::params::prefix_dir') %>/bin/httpd
+apachectl=<%= scope.lookupvar('httpd::prefix_dir') %>/bin/apachectl
+httpd=<%= scope.lookupvar('httpd::prefix_dir') %>/bin/httpd
 prog=httpd
-pidfile=<%= scope.lookupvar('httpd::params::pid_dir') %>/httpd.pid
+pidfile=<%= scope.lookupvar('httpd::pid_dir') %>/httpd.pid
 lockfile=/var/lock/subsys/httpd
 RETVAL=0
 STOP_TIMEOUT=${STOP_TIMEOUT-10}

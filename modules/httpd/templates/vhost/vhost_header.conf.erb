@@ -1,15 +1,15 @@
 <% if @www_root -%>
-<VirtualHost *:80>
+<VirtualHost *:<%= scope['httpd::config::conf::listen'] %>>
     ServerAdmin <%= @server_admin %>
-    DocumentRoot <%= @www_root %>
+    DocumentRoot "<%= @www_root %>"
     ServerName <%= @server_name %>
     <% if @errorlog_enable == 'true' -%>
-    ErrorLog <%= scope['apache::params::log_dir'] %>/vhost_error_<%= @server_name %>.log
+    ErrorLog <%= scope['httpd::log_dir'] %>/vhost_error_<%= @server_name %>.log
     <% else %>
     ErrorLog /dev/null
     <% end -%>
     <% if @accesslog_enable == 'true' -%>
-    CustomLog <%= scope['apache::params::log_dir'] %>/vhost_access_<%= @server_name %>.log combined
+    CustomLog <%= scope['httpd::log_dir'] %>/vhost_access_<%= @server_name %>.log combined
     <% else %>
     CustomLog /dev/null combined
     <% end -%>

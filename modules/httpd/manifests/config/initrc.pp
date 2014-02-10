@@ -1,9 +1,9 @@
 class httpd::config::initrc {
 
-    include baseconf::globalparams, httpd::params
+    include baseconf::globalparams
 
     # step control
-    Class["httpd::install::post"] -> File["initrc_file"]
+    Class["httpd::config::conf"] -> File["initrc_file"]
     File["initrc_file"] ~> Class["httpd::service::control"]
 
     # resource template declare

@@ -1,5 +1,5 @@
 # Sample Usage:
-#  httpd::config::conf { 'httpd.test.com':
+#  class { 'httpd::config::conf':
 #      servertokens                => 'Prod'               # (Optional)
 #      listen                      => '80',                # (Optional)
 #      serveradmin                 => 'root@localhost',    # (Optional)
@@ -82,7 +82,7 @@
 #      cgi_module                  => undef,               # (Optional)
 #      version_module              => undef,               # (Optional)
 #  }
-define httpd::config::conf (
+class httpd::config::conf (
     $servertokens                = 'Prod',
     $listen                      = '80',
     $serveradmin                 = 'root@localhost',
@@ -147,7 +147,7 @@ define httpd::config::conf (
     $mime_module                 = 'yes',
     $dav_module                  = undef,
     $status_module               = undef,
-    $autoindex_module            = 'yes',
+    $autoindex_module            = undef,
     $info_module                 = undef,
     $dav_fs_module               = undef,
     $vhost_alias_module          = undef,
@@ -171,7 +171,6 @@ define httpd::config::conf (
     $cgi_module                  = undef,
     $version_module              = undef,
 ) {
-    include httpd::params
 
     # step control
     Class["httpd::install::post"] -> File["conf_file"]
@@ -179,8 +178,8 @@ define httpd::config::conf (
 
     # resource template declare
     File {
-        owner   => "${httpd::params::daemon_user}",
-        group   => "${httpd::params::daemon_group}",
+        owner   => "${httpd::daemon_user}",
+        group   => "${httpd::daemon_group}",
         mode    => '0644'
     }
 
@@ -188,7 +187,7 @@ define httpd::config::conf (
     file { "conf_file":
         ensure  => present,
         content => template('httpd/httpd.conf.erb'),
-        path    => "${httpd::params::conf_dir}/httpd.conf",
+        path    => "${httpd::conf_dir}/httpd.conf",
     }
 
     file { "www_root":
@@ -197,3 +196,4 @@ define httpd::config::conf (
         path    => "${www_root}",
     }
 }
+

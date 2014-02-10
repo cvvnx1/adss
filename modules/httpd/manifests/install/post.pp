@@ -1,6 +1,6 @@
 class httpd::install::post {
 
-    include baseconf::globalparams, httpd::params
+    include baseconf::globalparams
 
     # step control
     Class["httpd::install::compile"] -> File["conf_dir"] -> File["confd_dir"]
@@ -10,8 +10,8 @@ class httpd::install::post {
 
     # resource template declare
     File {
-        owner   => "${httpd::params::daemon_user}",
-        group   => "${httpd::params::daemon_group}",
+        owner   => "${httpd::daemon_user}",
+        group   => "${httpd::daemon_group}",
         mode    => '0644',
     }
 
@@ -19,31 +19,31 @@ class httpd::install::post {
     file { "conf_dir":
         ensure  => directory,
         mode    => 0755,
-        path    => "${httpd::params::conf_dir}",
+        path    => "${httpd::conf_dir}",
     }
 
     file { "confd_dir":
         ensure  => directory,
         mode    => 0755,
-        path    => "${httpd::params::conf_dir}/conf.d",
+        path    => "${httpd::confd_dir}",
     }
 
     file { "log_dir":
         ensure  => directory,
         mode    => 0755,
-        path    => "${httpd::params::log_dir}",
+        path    => "${httpd::log_dir}",
     }
 
     file { "pid_dir":
         ensure  => directory,
         mode    => 0755,
-        path    => "${httpd::params::pid_dir}",
+        path    => "${httpd::pid_dir}",
     }
 
     file { "temp_dir":
         ensure  => directory,
         mode    => 0755,
-        path    => "${httpd::params::temp_dir}",
+        path    => "${httpd::temp_dir}",
     }
 }
 

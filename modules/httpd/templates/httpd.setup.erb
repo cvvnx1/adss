@@ -12,30 +12,30 @@ initvar(){
   # install system infomation
   prog="httpd"
 
-  pkg="<%= scope.lookupvar('httpd::params::pkg') %>"
+  pkg="<%= scope.lookupvar('httpd::pkg') %>"
 
-  prefix="<%= scope.lookupvar('httpd::params::prefix_dir') %>"
-  confdir="<%= scope.lookupvar('httpd::params::conf_dir') %>"
-  confddir="<%= scope.lookupvar('httpd::params::confd_dir') %>"
+  prefix="<%= scope.lookupvar('httpd::prefix_dir') %>"
+  conf_dir="<%= scope.lookupvar('httpd::conf_dir') %>"
+  confd_dir="<%= scope.lookupvar('httpd::confd_dir') %>"
 
-  compile_opt="<%= scope.lookupvar('httpd::params::compile_opt') %>"
+  compile_opt="<%= scope.lookupvar('httpd::compile_opt') %>"
 
   nowversion="$(cat ${prefix}/${adss_statusfile} | grep "version" | sed "s/.*=//g")"
-  orderversion="<%= scope.lookupvar('httpd::params::version') %>"
+  orderversion="<%= scope.lookupvar('httpd::version') %>"
 }
 
 compile(){
   tar xvf ${adss_basepath}/${prog}/${pkg} -C ${adss_basepath}/${prog}
   cd ${adss_basepath}/${prog}/${pkg%.*.*}
-  ./configure --prefix=${prefix} ${compile_opt}
+  ./configure --prefix=${prefix} --sysconfdir=${conf_dir} ${compile_opt}
   make -j <%= @processorcount %> && make install
   rm -rf ${adss_basepath}/${prog}/${pkg%.*.*}
 }
 
 post(){
-  mkdir -pv ${confddir}
+  mkdir -pv ${confd_dir}
 
-  chmod 755 ${confddir}
+  chmod 755 ${confd_dir}
 }
 
 regpath(){

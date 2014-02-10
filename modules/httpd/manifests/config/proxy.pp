@@ -1,6 +1,6 @@
 # Sample Usage:
 #  httpd::config::proxy{ 'www.test.com':
-#    server_id          => '1',              # {Optional for first vhost)
+#    vhost_id          => '1',              # {Optional for first vhost)
 #    server_name        => 'www.test.com',
 #    proxy_type         => 'ajp',            # ajp(ftp|http|connect feature on future)
 #    host_name          => [ "node1.test.com", "node2.test.com", "node3.test.com" ],
@@ -13,7 +13,7 @@
 #    ajp_onfailove      => 'On',             # (Optional)
 #  }
 define httpd::config::proxy(
-    $server_id          = '1',
+    $vhost_id          = '1',
     $server_name        = undef,
     $proxy_type         = undef,
     $host_name          = undef,
@@ -25,29 +25,24 @@ define httpd::config::proxy(
     $ajp_stickysession  = 'jsessionid',
     $ajp_onfailove      = 'On',
 ) {
-    include baseconf::globalparams, httpd::params
+    include baseconf::globalparams
 
     # step control
-    Class["httpd::install::post"] -> File["vhost_proxy_file"] -> File["proxy_file"]
-    File["vhost_proxy_file"] ~> Class["httpd::service::control"]
+    Class["httpd::config::conf"] -> File["vhost_proxy_file_${vhost_id}"] -> File["proxy_file"]
+    File["vhost_proxy_file_${vhost_id}"] ~> Class["httpd::service::control"]
 
     # resource template declare
     File {
-        owner   => "${httpd::params::daemon_user}",
-        group   => "${httpd::params::daemon_group}",
+        owner   => "${httpd::daemon_user}",
+        group   => "${httpd::daemon_group}",
         mode    => '0644'
     }
 
     # resources declare
-    file { "proxy_file":
-        ensure  => present,
-        content => template('httpd/proxy.conf.erb'),
-        path    => "${httpd::params::confd_dir}/proxy.conf",
-    }
-
-    file { "vhost_proxy_file":
+    file { "vhost_proxy_file_${vhost_id}":
         ensure  => present,
         content => template('httpd/vhost/vhost_proxy.conf.erb'),
-        path    => "${httpd::params::temp_dir}/vhost_${server_name}_${server_id}50.conf",
+        path    => "${httpd::temp_dir}/vhost_${server_name}_${vhost_id}50.conf",
     }
 }
+

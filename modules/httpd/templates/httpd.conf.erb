@@ -1,22 +1,28 @@
 ServerTokens <%= @servertokens %>
 Listen <%= @listen %>
+HostnameLookups <%= @hostnamelookups %>
 
-ServerRoot <%= scope.lookupvar('httpd::params::conf_dir') %>
-PidFile <%= scope.lookupvar('httpd::params::pid_dir') %>/httpd.pid
+ServerRoot <%= scope.lookupvar('httpd::conf_dir') %>
+PidFile <%= scope.lookupvar('httpd::pid_dir') %>/httpd.pid
 
-User <%= scope.lookupvar('httpd::params::daemon_user') %>
-Group <%= scope.lookupvar('httpd::params::daemon_group') %>
+User <%= scope.lookupvar('httpd::daemon_user') %>
+Group <%= scope.lookupvar('httpd::daemon_group') %>
 
 ServerAdmin <%= @serveradmin %>
+ServerSignature <%= @serversignature %>
 UseCanonicalName <%= @usecanonicalname %>
 
 DocumentRoot "<%= @www_root %>"
+AccessFileName .htaccess
+DefaultType text/plain
 
 Timeout <%= @timeout %>
 
 KeepAlive <%= @keepalive %>
 MaxKeepAliveRequests <%= @maxkeepaliverequests %>
 KeepAliveTimeout <%= @keepalivetimeout %>
+
+AddDefaultCharset UTF-8
 
 <IfModule prefork.c>
     StartServers          <%= @processorcount %>
@@ -94,85 +100,13 @@ KeepAliveTimeout <%= @keepalivetimeout %>
 <% if @cgi_module %>LoadModule cgi_module ../modules/mod_cgi.so<% end %>
 <% if @version_module %>LoadModule version_module ../modules/mod_version.so<% end %>
 
+<% if @dir_module -%>
 DirectoryIndex <%= @directoryindex %>
-IndexIgnore <%= @indexignore %>
-
-HostnameLookups <%= @hostnamelookups %>
-
-<Directory />
-    Options FollowSymLinks
-    AllowOverride None
-</Directory>
-
-<Directory "<%= @www_root %>">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-</Directory>
-
-<IfModule mod_userdir.c>
-    UserDir disabled
-</IfModule>
-
-AccessFileName .htaccess
-
-<Files ~ "^\.ht">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</Files>
-
-TypesConfig mime.types
-
-DefaultType text/plain
-
-<IfModule mod_mime_magic.c>
-    MIMEMagicFile magic
-</IfModule>
-
-LogLevel <%= @loglevel_combined %>
-
-LogFormat "<%= @logformat_combined %>" combined
-LogFormat "%h %l %u %t \"%r\" %>s %b" common
-LogFormat "%{Referer}i -> %U" referer
-LogFormat "%{User-agent}i" agent
-
-ErrorLog <%= scope.lookupvar('httpd::params::log_dir') %>/error.log
-<% if @accesslog == 'true' -%>
-CustomLog <%= scope.lookupvar('httpd::params::log_dir') %>/access.log combined
-<% else -%>
-CustomLog /dev/null combined
 <% end -%>
 
-
-ServerSignature <%= @serversignature %>
-
-Alias /icons/ "<%= scope.lookupvar('httpd::params::prefix_dir') %>/icons/"
-
-<Directory "<%= scope.lookupvar('httpd::params::prefix_dir') %>/icons/">
-    Options Indexes MultiViews FollowSymLinks
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-</Directory>
-
-<IfModule mod_dav_fs.c>
-    # Location of the WebDAV lock database.
-    DAVLockDB /var/lib/dav/lockdb
-</IfModule>
-
-ScriptAlias /cgi-bin/ "<%= scope.lookupvar('httpd::params::prefix_dir') %>/cgi-bin/"
-
-<Directory "<%= scope.lookupvar('httpd::params::prefix_dir') %>/cgi-bin">
-    AllowOverride None
-    Options None
-    Order allow,deny
-    Allow from all
-</Directory>
-
+<% if @autoindex_module -%>
+IndexIgnore <%= @indexignore %>
 IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8
-
 AddIconByEncoding (CMP,/icons/compressed.gif) x-compress x-gzip
 
 AddIconByType (TXT,/icons/text.gif) text/*
@@ -206,6 +140,16 @@ DefaultIcon /icons/unknown.gif
 
 ReadmeName README.html
 HeaderName HEADER.html
+<% end -%>
+
+<% if @userdir_module -%>
+<IfModule mod_userdir.c>
+    UserDir disabled
+</IfModule>
+<% end -%>
+
+<% if @mime_module -%>
+TypesConfig mime.types
 
 AddLanguage ca .ca
 AddLanguage cs .cz .cs
@@ -234,46 +178,112 @@ AddLanguage sv .sv
 AddLanguage zh-CN .zh-cn
 AddLanguage zh-TW .zh-tw
 
-LanguagePriority en ca cs da de el eo es et fr he hr it ja ko ltz nl nn no pl pt pt-BR ru sv zh-CN zh-TW
-
-ForceLanguagePriority Prefer Fallback
-
-AddDefaultCharset UTF-8
-
 AddType application/x-compress .Z
 AddType application/x-gzip .gz .tgz
 
 AddType application/x-x509-ca-cert .crt
 AddType application/x-pkcs7-crl    .crl
 
+AddType text/html .shtml
+
 AddHandler type-map var
 
-AddType text/html .shtml
 AddOutputFilter INCLUDES .shtml
+<% end -%>
 
-Alias /error/ "<%= scope.lookupvar('httpd::params::prefix_dir') %>/error/"
-
-<IfModule mod_negotiation.c>
-    <IfModule mod_include.c>
-        <Directory "<%= scope.lookupvar('httpd::params::prefix_dir') %>/error">
-            AllowOverride None
-            Options IncludesNoExec
-            AddOutputFilter Includes html
-            AddHandler type-map var
-            Order allow,deny
-            Allow from all
-            LanguagePriority en es de fr
-            ForceLanguagePriority Prefer Fallback
-        </Directory>
-    </IfModule>
+<% if @mime_magic_module -%>
+<IfModule mod_mime_magic.c>
+    MIMEMagicFile magic
 </IfModule>
+<% end -%>
 
+LogLevel <%= @loglevel_combined %>
+ErrorLog <%= scope.lookupvar('httpd::log_dir') %>/error.log
+
+<% if @log_config_module -%>
+LogFormat "<%= @logformat_combined %>" combined
+LogFormat "%h %l %u %t \"%r\" %>s %b" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+<% if @accesslog == 'true' -%>
+CustomLog <%= scope.lookupvar('httpd::log_dir') %>/access.log combined
+<% else -%>
+CustomLog /dev/null combined
+<% end -%>
+<% end -%>
+
+<% if @alias_module -%>
+Alias /icons/ "<%= scope.lookupvar('httpd::prefix_dir') %>/icons/"
+Alias /error/ "<%= scope.lookupvar('httpd::prefix_dir') %>/error/"
+ScriptAlias /cgi-bin/ "<%= scope.lookupvar('httpd::prefix_dir') %>/cgi-bin/"
+<% end -%>
+
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</Files>
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+</Directory>
+
+<Directory "<%= @www_root %>">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Directory "<%= scope.lookupvar('httpd::prefix_dir') %>/icons/">
+    Options Indexes MultiViews FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Directory "<%= scope.lookupvar('httpd::prefix_dir') %>/cgi-bin">
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<% if @dav_fs_module -%>
+<IfModule mod_dav_fs.c>
+    # Location of the WebDAV lock database.
+    DAVLockDB /var/lib/dav/lockdb
+</IfModule>
+<% end -%>
+
+<% if @negotiation_module -%>
+<IfModule mod_negotiation.c>
+  LanguagePriority en ca cs da de el eo es et fr he hr it ja ko ltz nl nn no pl pt pt-BR ru sv zh-CN zh-TW
+  ForceLanguagePriority Prefer Fallback
+
+  <% if @include_module -%>
+  <IfModule mod_include.c>
+    <Directory "<%= scope.lookupvar('httpd::prefix_dir') %>/error">
+      AllowOverride None
+      Options IncludesNoExec
+      <% if @mime_module -%>
+      AddOutputFilter Includes html
+      AddHandler type-map var<% end -%>
+      Order allow,deny
+      Allow from all
+      LanguagePriority en es de fr
+      ForceLanguagePriority Prefer Fallback
+    </Directory>
+  </IfModule><% end -%>
+</IfModule><% end -%>
+
+<% if @setenvif_module -%>
 BrowserMatch "Mozilla/2" nokeepalive
 BrowserMatch "MSIE 4\.0b2;" nokeepalive downgrade-1.0 force-response-1.0
 BrowserMatch "RealPlayer 4\.0" force-response-1.0
 BrowserMatch "Java/1\.0" force-response-1.0
 BrowserMatch "JDK/1\.0" force-response-1.0
-
 BrowserMatch "Microsoft Data Access Internet Publishing Provider" redirect-carefully
 BrowserMatch "MS FrontPage" redirect-carefully
 BrowserMatch "^WebDrive" redirect-carefully
@@ -281,5 +291,8 @@ BrowserMatch "^WebDAVFS/1.[0123]" redirect-carefully
 BrowserMatch "^gnome-vfs/1.0" redirect-carefully
 BrowserMatch "^XML Spy" redirect-carefully
 BrowserMatch "^Dreamweaver-WebDAV-SCM1" redirect-carefully
+<% end -%>
 
-Include <%= scope.lookupvar('httpd::params::confd_dir') %>/*.conf
+NameVirtualHost *:<%= @listen %>
+Include <%= scope.lookupvar('httpd::confd_dir') %>/*.conf
+

@@ -42,7 +42,7 @@
 #         write_buffer                => '2M',          # (Optional)
 #     }
 #     mysqld::config::rep { 'mysql.test.com':           # (Optional)
-#         server_id        => '1',                      # (Optional)
+#         vhost_id         => '1',                      # (Optional)
 #         master_host      => 'master.test.com',
 #         master_user      => 'rep',
 #         master_psw       => 'rep',
@@ -79,7 +79,7 @@
 #     ... Read more in modules/htppd/manifests/config/conf.pp ...
 #     }
 #     httpd::config::vhost { 'httpd.test.com':
-#         server_id          => '1',                          # (Optional for first vhost)
+#         vhost_id           => '1',                          # (Optional for first vhost)
 #         server_name        => 'httpd.test.com',
 #         server_admin       => 'httpd@test.com',
 #         www_root           => '/opt/www/www.test.com',
@@ -105,7 +105,7 @@
 #     ... Read more in modules/htppd/manifests/config/conf.pp ...
 #     }
 #     httpd::config::vhost { 'httpd.test.com':
-#         server_id          => '1',                          # (Optional for first vhost)
+#         vhost_id           => '1',                          # (Optional for first vhost)
 #         server_name        => 'httpd.test.com',
 #         server_admin       => 'httpd@test.com',
 #         www_root           => '/opt/www/www.test.com',
@@ -113,7 +113,7 @@
 #         accesslog_enable   => 'false',                      # (Optional)
 #     }
 #     httpd::config::proxy{ 'www.test.com':
-#       server_id            => '1',                          # {Optional for first vhost)
+#       vhost_id             => '1',                          # {Optional for first vhost)
 #       server_name          => 'httpd.test.com',
 #       proxy_type           => 'ajp',                        # ajp(ftp|http|connect feature on future)
 #       host_name            => [ "ajp1.test.com", "ajp2.test.com", "ajp3.test.com" ],
@@ -130,7 +130,7 @@
 #         www_root           => '/opt/www',                   # (Optional)
 #     }
 #     httpd::config::vhost { 'httpda.test.com':
-#         server_id          => '1',                          # (Optional for first vhost)
+#         vhost_id           => '1',                          # (Optional for first vhost)
 #         server_name        => 'httpda.test.com',
 #         server_admin       => 'admin@test.com',
 #         www_root           => '/opt/www/httpda.test.com',
@@ -140,13 +140,13 @@
 #         www_root           => '/opt/www',                   # (Optional)
 #     }
 #     httpd::config::vhost { 'httpda.test.com':
-#         server_id          => '1',                          # (Optional for first vhost)
+#         vhost_id           => '1',                          # (Optional for first vhost)
 #         server_name        => 'httpda.test.com',
 #         server_admin       => 'admin@test.com',
 #         www_root           => '/opt/www/httpda.test.com',
 #     }
 #     httpd::config::proxy{ 'www.test.com':
-#       server_id            => '1',                          # {Optional for first vhost)
+#       vhost_id             => '1',                          # {Optional for first vhost)
 #       server_name          => 'httpda.test.com',
 #       proxy_type           => 'ajp',                        # ajp(ftp|http|connect feature on future)
 #       host_name            => [ "ajp1.test.com", "ajp2.test.com", "ajp3.test.com" ],
