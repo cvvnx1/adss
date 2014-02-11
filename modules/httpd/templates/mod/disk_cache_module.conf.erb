@@ -1,0 +1,12 @@
+<IfModule mod_cache.c>
+<% if @mem_cache_module -%>
+  <IfModule mod_disk_cache.c>
+    CacheEnable disk <%= @cacheenable %>
+    CacheRoot <%= @cacheroot %>
+    CacheDirLength <%= @cachedirlength %>
+    CacheDirLevels <%= @cachedirlevels %>
+    CacheMinFileSize <%= @cacheminfilesize %>
+    CacheMaxFileSize <%= @cachemaxfilesize %>
+  </IfModule>
+<% end -%>
+</IfModule>

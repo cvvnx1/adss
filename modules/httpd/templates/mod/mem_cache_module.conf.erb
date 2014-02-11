@@ -1,0 +1,13 @@
+<IfModule mod_cache.c>
+<% if @mem_cache_module -%>
+  <IfModule mod_mem_cache.c>
+    CacheEnable mem <%= @cacheenable %>
+    MCacheSize <%= @mcachesize %>
+    MCacheMaxObjectCount <%= @mcachemaxobjectcount %>
+    MCacheMinObjectSize <%= @mcacheminobjectsize %>
+    MCacheMaxObjectSize <%= @mcachemaxobjectsize %>
+    MCacheRemovalAlgorithm <%= @mcacheremovalalgorithm %>
+    MCacheMaxStreamingBuffer <%= @mcachemaxstreamingbuffer %>
+  </IfModule>
+<% end -%>
+</IfModule>

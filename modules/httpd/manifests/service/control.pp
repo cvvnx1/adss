@@ -11,6 +11,7 @@ class httpd::service::control {
     exec { "rebuild_vhost_file":
         command     => "cat ${httpd::temp_dir}/vhost_* > ${httpd::confd_dir}/vhost.conf",
         path        => "${baseconf::globalparams::binpath}",
+        user        => "${httpd::daemon_user}",
         refreshonly => true,
         subscribe   => File["${httpd::temp_dir}"],
     }
@@ -18,6 +19,7 @@ class httpd::service::control {
     exec { "rebuild_base_file":
         command     => "cat ${httpd::temp_dir}/base_* > ${httpd::confd_dir}/base.conf",
         path        => "${baseconf::globalparams::binpath}",
+        user        => "${httpd::daemon_user}",
         refreshonly => true,
         subscribe   => File["${httpd::temp_dir}"],
     }

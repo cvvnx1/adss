@@ -76,11 +76,24 @@
 #      proxy_http_module           => undef,               # (Optional)
 #      proxy_ajp_module            => undef,               # (Optional)
 #      proxy_connect_module        => undef,               # (Optional)
-#      cache_module                => undef,               # (Optional)
 #      suexec_module               => undef,               # (Optional)
-#      disk_cache_module           => undef,               # (Optional)
 #      cgi_module                  => undef,               # (Optional)
 #      version_module              => undef,               # (Optional)
+#      cache_module                = undef,                # (Optional)
+#      cacheenable                 = '/',                  # (Optional)
+#      disk_cache_module           => undef,               # (Optional)
+#      cacheroot                   => '/tmp/httpd',        # (Optional)
+#      cachedirlength              => '4',                 # (Optional)
+#      cachedirlevels              => '5',                 # (Optional)
+#      cacheminfilesize            => '64000',             # (Optional)
+#      cachemaxfilesize            => '64',                # (Optional)
+#      mem_cache_module            => undef,               # (Optional)
+#      mcachesize                  => '262144',            # (Optional)
+#      mcachemaxobjectcount        => '60000',             # (Optional)
+#      mcacheminobjectSize         => '1',                 # (Optional)
+#      mcachemaxobjectSize         => '5120',              # (Optional)
+#      mcacheremovalalgorithm      => 'GDSF',              # (Optional)
+#      mcachemaxstreamingbuffer    => '50000',             # (Optional)
 #  }
 class httpd::config::conf (
     $servertokens                = 'Prod',
@@ -165,12 +178,30 @@ class httpd::config::conf (
     $proxy_http_module           = undef,
     $proxy_ajp_module            = undef,
     $proxy_connect_module        = undef,
-    $cache_module                = undef,
     $suexec_module               = undef,
-    $disk_cache_module           = undef,
     $cgi_module                  = undef,
     $version_module              = undef,
+
+    $cache_module                = undef,
+    $cacheenable                 = '/',
+
+    $disk_cache_module           = undef,
+    $cacheroot                   = '/tmp/httpd',
+    $cachedirlength              = '4',
+    $cachedirlevels              = '5',
+    $cacheminfilesize            = '64000',
+    $cachemaxfilesize            = '64',
+
+    $mem_cache_module            = undef,
+    $mcachesize                  = '262144',
+    $mcachemaxobjectcount        = '60000',
+    $mcacheminobjectSize         = '1',
+    $mcachemaxobjectSize         = '5120',
+    $mcacheremovalalgorithm      = 'GDSF',
+    $mcachemaxstreamingbuffer    = '50000',
 ) {
+
+    include baseconf::globalparams
 
     # step control
     Class["httpd::install::post"] -> File["conf_file"]
@@ -195,5 +226,29 @@ class httpd::config::conf (
         mode    => 0755,
         path    => "${www_root}",
     }
+
+    if $mem_cache_module {
+        class { "httpd::config::mod::mem_cache_module":
+            cacheenable                 => "${httpd::config::conf::cacheenable}",
+            mcachesize                  => "${httpd::config::conf::mcachesize}",
+            mcachemaxobjectcount        => "${httpd::config::conf::mcachemaxobjectcount}",
+            mcacheminobjectsize         => "${httpd::config::conf::mcacheminobjectSize}",
+            mcachemaxobjectsize         => "${httpd::config::conf::mcachemaxobjectSize}",
+            mcacheremovalalgorithm      => "${httpd::config::conf::mcacheremovalalgorithm}",
+            mcachemaxstreamingbuffer    => "${httpd::config::conf::mcachemaxstreamingbuffer}",
+        }
+    }
+
+    if $disk_cache_module {
+        class { "httpd::config::mod::disk_cache_module":
+            cacheenable                 => "${httpd::config::conf::cacheenable}",
+            cacheroot                   => "${httpd::config::conf::cacheroot}",
+            cachedirlength              => "${httpd::config::conf::cachedirlength}",
+            cachedirlevels              => "${httpd::config::conf::cachedirlevels}",
+            cacheminfilesize            => "${httpd::config::conf::cacheminfilesize}",
+            cachemaxfilesize            => "${httpd::config::conf::cachemaxfilesize}",
+        }
+    }
+
 }
 

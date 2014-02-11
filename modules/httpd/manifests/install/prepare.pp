@@ -16,7 +16,7 @@ class httpd::install::prepare {
     # resources declare
     package { "prepkg":
         ensure => present,
-        name => [ "gcc", "make", "apr-devel", "apr-util-devel", "zlib-devel" ],
+        name => [ "gcc", "make", "apr-devel", "apr-util-devel", "zlib-devel", "perl" ],
     }
 
     file { "worker_dir":

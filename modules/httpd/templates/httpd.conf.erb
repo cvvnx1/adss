@@ -46,59 +46,70 @@ AddDefaultCharset UTF-8
     MaxRequestsPerChild   <%= @worker_maxeequestsperchild %>
 </IfModule>
 
-
+<% if @actions_module %>LoadModule actions_module ../modules/mod_actions.so<% end %>
+<% if @alias_module %>LoadModule alias_module ../modules/mod_alias.so<% end %>
+<% if @asis_module %>LoadModule asis_module ../modules/mod_asis.so<% end %>
 <% if @auth_basic_module %>LoadModule auth_basic_module ../modules/mod_auth_basic.so<% end %>
 <% if @auth_digest_module %>LoadModule auth_digest_module ../modules/mod_auth_digest.so<% end %>
-<% if @authn_file_module %>LoadModule authn_file_module ../modules/mod_authn_file.so<% end %>
-<% if @authn_alias_module %>LoadModule authn_alias_module ../modules/mod_authn_alias.so<% end %>
 <% if @authn_anon_module %>LoadModule authn_anon_module ../modules/mod_authn_anon.so<% end %>
+<% if @authn_dbd_module %>LoadModule authn_dbd_module ../modules/mod_authn_dbd.so<% end %>
 <% if @authn_dbm_module %>LoadModule authn_dbm_module ../modules/mod_authn_dbm.so<% end %>
 <% if @authn_default_module %>LoadModule authn_default_module ../modules/mod_authn_default.so<% end %>
-<% if @authz_host_module %>LoadModule authz_host_module ../modules/mod_authz_host.so<% end %>
-<% if @authz_user_module %>LoadModule authz_user_module ../modules/mod_authz_user.so<% end %>
-<% if @authz_owner_module %>LoadModule authz_owner_module ../modules/mod_authz_owner.so<% end %>
-<% if @authz_groupfile_module %>LoadModule authz_groupfile_module ../modules/mod_authz_groupfile.so<% end %>
+<% if @authn_file_module %>LoadModule authn_file_module ../modules/mod_authn_file.so<% end %>
 <% if @authz_dbm_module %>LoadModule authz_dbm_module ../modules/mod_authz_dbm.so<% end %>
 <% if @authz_default_module %>LoadModule authz_default_module ../modules/mod_authz_default.so<% end %>
-<% if @ldap_module %>LoadModule ldap_module ../modules/mod_ldap.so<% end %>
-<% if @authnz_ldap_module %>LoadModule authnz_ldap_module ../modules/mod_authnz_ldap.so<% end %>
-<% if @include_module %>LoadModule include_module ../modules/mod_include.so<% end %>
-<% if @log_config_module %>LoadModule log_config_module ../modules/mod_log_config.so<% end %>
-<% if @logio_module %>LoadModule logio_module ../modules/mod_logio.so<% end %>
-<% if @env_module %>LoadModule env_module ../modules/mod_env.so<% end %>
-<% if @ext_filter_module %>LoadModule ext_filter_module ../modules/mod_ext_filter.so<% end %>
-<% if @mime_magic_module %>LoadModule mime_magic_module ../modules/mod_mime_magic.so<% end %>
-<% if @expires_module %>LoadModule expires_module ../modules/mod_expires.so<% end %>
-<% if @deflate_module %>LoadModule deflate_module ../modules/mod_deflate.so<% end %>
-<% if @headers_module %>LoadModule headers_module ../modules/mod_headers.so<% end %>
-<% if @usertrack_module %>LoadModule usertrack_module ../modules/mod_usertrack.so<% end %>
-<% if @setenvif_module %>LoadModule setenvif_module ../modules/mod_setenvif.so<% end %>
-<% if @mime_module %>LoadModule mime_module ../modules/mod_mime.so<% end %>
-<% if @dav_module %>LoadModule dav_module ../modules/mod_dav.so<% end %>
-<% if @status_module %>LoadModule status_module ../modules/mod_status.so<% end %>
+<% if @authz_groupfile_module %>LoadModule authz_groupfile_module ../modules/mod_authz_groupfile.so<% end %>
+<% if @authz_host_module %>LoadModule authz_host_module ../modules/mod_authz_host.so<% end %>
+<% if @authz_owner_module %>LoadModule authz_owner_module ../modules/mod_authz_owner.so<% end %>
+<% if @authz_user_module %>LoadModule authz_user_module ../modules/mod_authz_user.so<% end %>
 <% if @autoindex_module %>LoadModule autoindex_module ../modules/mod_autoindex.so<% end %>
-<% if @info_module %>LoadModule info_module ../modules/mod_info.so<% end %>
+<% if @cern_meta_module %>LoadModule cern_meta_module ../modules/mod_cern_meta.so<% end %>
+<% if @cgi_module %>LoadModule cgi_module ../modules/mod_cgi.so<% end %>
 <% if @dav_fs_module %>LoadModule dav_fs_module ../modules/mod_dav_fs.so<% end %>
-<% if @vhost_alias_module %>LoadModule vhost_alias_module ../modules/mod_vhost_alias.so<% end %>
-<% if @negotiation_module %>LoadModule negotiation_module ../modules/mod_negotiation.so<% end %>
+<% if @dav_module %>LoadModule dav_module ../modules/mod_dav.so<% end %>
+<% if @dbd_module %>LoadModule dbd_module ../modules/mod_dbd.so<% end %>
+<% if @deflate_module %>LoadModule deflate_module ../modules/mod_deflate.so<% end %>
 <% if @dir_module %>LoadModule dir_module ../modules/mod_dir.so<% end %>
-<% if @actions_module %>LoadModule actions_module ../modules/mod_actions.so<% end %>
-<% if @speling_module %>LoadModule speling_module ../modules/mod_speling.so<% end %>
-<% if @userdir_module %>LoadModule userdir_module ../modules/mod_userdir.so<% end %>
-<% if @alias_module %>LoadModule alias_module ../modules/mod_alias.so<% end %>
-<% if @substitute_module %>LoadModule substitute_module ../modules/mod_substitute.so<% end %>
-<% if @rewrite_module %>LoadModule rewrite_module ../modules/mod_rewrite.so<% end %>
+<% if @dumpio_module %>LoadModule dumpio_module ../modules/mod_dumpio.so<% end %>
+<% if @env_module %>LoadModule env_module ../modules/mod_env.so<% end %>
+<% if @expires_module %>LoadModule expires_module ../modules/mod_expires.so<% end %>
+<% if @ext_filter_module %>LoadModule ext_filter_module ../modules/mod_ext_filter.so<% end %>
+<% if @filter_module %>LoadModule filter_module ../modules/mod_filter.so<% end %>
+<% if @headers_module %>LoadModule headers_module ../modules/mod_headers.so<% end %>
+<% if @ident_module %>LoadModule ident_module ../modules/mod_ident.so<% end %>
+<% if @imagemap_module %>LoadModule imagemap_module ../modules/mod_imagemap.so<% end %>
+<% if @include_module %>LoadModule include_module ../modules/mod_include.so<% end %>
+<% if @info_module %>LoadModule info_module ../modules/mod_info.so<% end %>
+<% if @log_config_module %>LoadModule log_config_module ../modules/mod_log_config.so<% end %>
+<% if @log_forensic_module %>LoadModule log_forensic_module ../modules/mod_log_forensic.so<% end %>
+<% if @logio_module %>LoadModule logio_module ../modules/mod_logio.so<% end %>
+<% if @mime_magic_module %>LoadModule mime_magic_module ../modules/mod_mime_magic.so<% end %>
+<% if @mime_module %>LoadModule mime_module ../modules/mod_mime.so<% end %>
+<% if @negotiation_module %>LoadModule negotiation_module ../modules/mod_negotiation.so<% end %>
+
+<% if @cache_module %>LoadModule cache_module ../modules/mod_cache.so<% end %>
+<% if @mem_cache_module %>LoadModule mem_cache_module ../modules/mod_mem_cache.so<% end %>
+<% if @disk_cache_module %>LoadModule disk_cache_module ../modules/mod_disk_cache.so<% end %>
+
 <% if @proxy_module %>LoadModule proxy_module ../modules/mod_proxy.so<% end %>
+<% if @proxy_ajp_module %>LoadModule proxy_ajp_module ../modules/mod_proxy_ajp.so<% end %>
 <% if @proxy_balancer_module %>LoadModule proxy_balancer_module ../modules/mod_proxy_balancer.so<% end %>
+<% if @proxy_connect_module %>LoadModule proxy_connect_module ../modules/mod_proxy_connect.so<% end %>
 <% if @proxy_ftp_module %>LoadModule proxy_ftp_module ../modules/mod_proxy_ftp.so<% end %>
 <% if @proxy_http_module %>LoadModule proxy_http_module ../modules/mod_proxy_http.so<% end %>
-<% if @proxy_ajp_module %>LoadModule proxy_ajp_module ../modules/mod_proxy_ajp.so<% end %>
-<% if @proxy_connect_module %>LoadModule proxy_connect_module ../modules/mod_proxy_connect.so<% end %>
-<% if @cache_module %>LoadModule cache_module ../modules/mod_cache.so<% end %>
-<% if @suexec_module %>LoadModule suexec_module ../modules/mod_suexec.so<% end %>
-<% if @disk_cache_module %>LoadModule disk_cache_module ../modules/mod_disk_cache.so<% end %>
-<% if @cgi_module %>LoadModule cgi_module ../modules/mod_cgi.so<% end %>
+<% if @proxy_scgi_module %>LoadModule proxy_scgi_module ../modules/mod_proxy_scgi.so<% end %>
+
+<% if @reqtimeout_module %>LoadModule reqtimeout_module ../modules/mod_reqtimeout.so<% end %>
+<% if @rewrite_module %>LoadModule rewrite_module ../modules/mod_rewrite.so<% end %>
+<% if @setenvif_module %>LoadModule setenvif_module ../modules/mod_setenvif.so<% end %>
+<% if @speling_module %>LoadModule speling_module ../modules/mod_speling.so<% end %>
+<% if @status_module %>LoadModule status_module ../modules/mod_status.so<% end %>
+<% if @substitute_module %>LoadModule substitute_module ../modules/mod_substitute.so<% end %>
+<% if @unique_id_module %>LoadModule unique_id_module ../modules/mod_unique_id.so<% end %>
+<% if @userdir_module %>LoadModule userdir_module ../modules/mod_userdir.so<% end %>
+<% if @usertrack_module %>LoadModule usertrack_module ../modules/mod_usertrack.so<% end %>
 <% if @version_module %>LoadModule version_module ../modules/mod_version.so<% end %>
+<% if @vhost_alias_module %>LoadModule vhost_alias_module ../modules/mod_vhost_alias.so<% end %>
 
 <% if @dir_module -%>
 DirectoryIndex <%= @directoryindex %>
@@ -225,19 +236,19 @@ ScriptAlias /cgi-bin/ "<%= scope.lookupvar('httpd::prefix_dir') %>/cgi-bin/"
 </Files>
 
 <Directory />
-    Options FollowSymLinks
+    Options -FollowSymLinks
     AllowOverride None
 </Directory>
 
 <Directory "<%= @www_root %>">
-    Options Indexes FollowSymLinks
+    Options Indexes -FollowSymLinks
     AllowOverride None
     Order allow,deny
     Allow from all
 </Directory>
 
 <Directory "<%= scope.lookupvar('httpd::prefix_dir') %>/icons/">
-    Options Indexes MultiViews FollowSymLinks
+    Options Indexes MultiViews
     AllowOverride None
     Order allow,deny
     Allow from all
@@ -275,8 +286,10 @@ ScriptAlias /cgi-bin/ "<%= scope.lookupvar('httpd::prefix_dir') %>/cgi-bin/"
       LanguagePriority en es de fr
       ForceLanguagePriority Prefer Fallback
     </Directory>
-  </IfModule><% end -%>
-</IfModule><% end -%>
+  </IfModule>
+  <% end -%>
+</IfModule>
+<% end -%>
 
 <% if @setenvif_module -%>
 BrowserMatch "Mozilla/2" nokeepalive

@@ -18,13 +18,15 @@ class httpd (
         /(?i-mx:CentOS|Suse)/ => 'apache',
         default               => 'apache',
         },
+) {
     $compile_opt    = '--with-mpm=prefork \
-                       --enable-mods-shared=all \
                        --enable-so --enable-rewrite --enable-deflate \
+                       --enable-cache --enable-disk-cache --enable-mem-cache \
+                       --enable-expires --enable-headers \
                        --enable-proxy \
                        --enable-proxy-connect --enable-proxy-ftp --enable-proxy-http \
-                       --enable-proxy-scgi --enable-proxy-ajp --enable-proxy-balancer',
-) {
+                       --enable-proxy-scgi --enable-proxy-ajp --enable-proxy-balancer \
+                       --enable-modules=all --enable-mods-shared=all'
     $conf_dir       = "${prefix_dir}/conf"
     $confd_dir      = "${conf_dir}/conf.d"
     $temp_dir       = "${prefix_dir}/tmp"
