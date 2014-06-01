@@ -1,0 +1,16 @@
+<% if @name -%>
+LoadModule proxy_module ../modules/mod_proxy.so
+LoadModule proxy_balancer_module ../modules/mod_proxy_balancer.so
+LoadModule headers_module ../modules/mod_headers.so
+
+<% if @proxy_type == "ajp" -%>
+LoadModule proxy_ajp_module ../modules/mod_proxy_ajp.so
+ProxyRequests Off
+<% elsif @proxy_type == "ftp" -%>
+LoadModule proxy_ftp_module ../modules/mod_proxy_ftp.so
+<% elsif @proxy_type == "connect" -%>
+LoadModule proxy_connect_module ../modules/mod_proxy_connect.so
+<% elsif @proxy_type == "http" -%>
+LoadModule proxy_http_module ../modules/mod_proxy_http.so
+<% end -%>
+<% end -%>

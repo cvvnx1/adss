@@ -1,0 +1,19 @@
+#!/bin/bash
+rm -f /etc/yum.repos.d/CentOS-*
+
+cat > /etc/yum.repos.d/localdvd.repo << EOF
+#[dvd]
+#name=localdvd
+#baseurl=file:///root/dvd/
+#gpgcheck=1
+#enable=1
+EOF
+
+cat > /etc/yum.repos.d/remote.repo << EOF
+[remote]
+name=remote
+baseurl=http://<%= scope.lookupvar('baseconf::globalparams::yumserver') %>/
+gpgcheck=1
+enable=1
+EOF
+

@@ -1,0 +1,43 @@
+[client]
+port = <%= @port %>
+socket = <%= scope.lookupvar('mysqld::params::sock') %>
+
+
+[mysqld]
+!include <%= scope.lookupvar('mysqld::params::confd_dir') %>
+datadir = <%= scope.lookupvar('mysqld::params::data_dir') %>
+tmpdir = <%= scope.lookupvar('mysqld::params::temp_dir') %>
+port = <%= @port %>
+socket = <%= scope.lookupvar('mysqld::params::sock') %>
+skip-external-locking
+key_buffer_size = <%= @key_buffer_size %>
+max_allowed_packet = <%= @max_allowed_packet %>
+table_open_cache = <%= @table_open_cache %>
+sort_buffer_size = <%= @sort_buffer_size %>
+net_buffer_length = <%= @net_buffer_length %>
+read_buffer_size = <%= @read_buffer_size %>
+read_rnd_buffer_size = <%= @read_rnd_buffer_size %>
+myisam_sort_buffer_size = <%= @myisam_sort_buffer_size %>
+
+log-bin = <%= @log_bin %>
+binlog_format = <%= @binlog_format %>
+
+[mysqldump]
+quick
+max_allowed_packet = <%= @max_allowed_packet %>
+
+[mysql]
+no-auto-rehash
+
+[myisamchk]
+key_buffer_size = <%= @key_buffer_size %>
+sort_buffer_size = <%= @sort_buffer_size %>
+read_buffer = <%= @read_buffer %>
+write_buffer = <%= @write_buffer %>
+
+[mysqlhotcopy]
+interactive-timeout
+
+[safe_mysqld]
+err-log = <%= scope.lookupvar('mysqld::params::log_dir') %>/mysqld.log
+pid-file = <%= scope.lookupvar('mysqld::params::pid_dir') %>/mysqld.pid
